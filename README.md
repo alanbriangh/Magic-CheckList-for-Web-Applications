@@ -1,4 +1,6 @@
 # Magic-CheckList-for-Web-Applications
-Web Security Checklist (Bug Bounty &amp; Pentesting)
+Web Security Checklist en español (una "hoja de ruta" ideal para Bug Bounty &amp; Pentesting)
 
-Para importar y usar con https://www.notion.so
+Basada en http://owasp.org y aportes personales
+
+Se puede importar y usar con https://www.notion.so (recomendado!)
