@@ -3,7 +3,7 @@
 **Information Gathering:**
 
 - [ ]  OSINT
-    - [ ]  [Googl](https://www.google.com/?client=safari)e
+    - [ ]  [Google](https://www.google.com/?client=safari)
 
         Aprovechar los dorks, site, inurl, intext, intitle, etc.
 
