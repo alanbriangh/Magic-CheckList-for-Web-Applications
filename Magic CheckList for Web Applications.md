@@ -1,6 +1,6 @@
 # Magic CheckList for Web Applications
 
-## **Information Gathering:**
+**Information Gathering:**
 
 - [ ]  OSINT
     - [ ]  [Googl](https://www.google.com/?client=safari)e
@@ -52,6 +52,11 @@
     - [http://asnmap.com](http://asnmap.com/) (Obtener mapa ASN)
     - [https://bgp.he.net](https://bgp.he.net/) (Obtener ASNs)
     - [https://mxtoolbox.com/asn.aspx](https://mxtoolbox.com/asn.aspx)
+- [ ]  Obtener Dominios/Subdominios a partir de rangos IP
+    - [https://github.com/zeropwn/spyse.py](https://github.com/zeropwn/spyse.py)
+
+    spyse -target xxx.xxx.xxx.0/24 --domains-on-ip
+
 - [ ]  Encontrar los dominios únicos
 
     for i in $(cat nombre_archivo_dominios.txt); do echo""; echo "ASN $i";echo ""; amass intel -active -asn $i;echo ""; done
@@ -68,7 +73,9 @@
 
     - [Assetfinder](https://github.com/tomnomnom/assetfinder)
 
-        assetfinder --subs-only [dominio.com](http://dominio.com/) | httprobe | tee -a salida.txt
+        assetfinder --subs-only [dominio.com](http://dominio.com/) | httprobe -t 40000 | tee -a salida.txt
+
+        -t  Timeout en milisegundos (40000 es el doble del default)
 
     - [Amass](https://github.com/OWASP/Amass)
 
@@ -77,26 +84,28 @@
 
     - [Altdns](https://github.com/infosec-au/altdns)
 
-        altdns -i subdominios.txt -o salida.txt -w wordlist.txt -r -s results_output.txt
+        altdns -i subdominios.txt -o salida.txt -w wordlist.txt -r -s salida_final.txt
 
     - [http://arthusu.xyz/subdomainScanner/](http://arthusu.xyz/subdomainScanner/)
     - [ ]  Subdomain Takeover
         - [Subjack](https://github.com/haccer/subjack)
         - [Subzy](https://github.com/LukaSikic/subzy)
+        - [Subdomain-Takeover](https://github.com/antichown/subdomain-takeover)
 
         Chequear en "[Can I take over XYZ](https://github.com/EdOverflow/can-i-take-over-xyz)" según el mensaje de error
 
 - [ ]  Screenshot de Webs
     - [Aquatone](https://github.com/michenriksen/aquatone)
 
-        cat hosts.txt | aquatone -ports xlarge -out ./output
-        (small, medium, large, xlarge)
+        Ejemplo:
+        cat hosts.txt | aquatone -ports (xlarge, small, medium, large, xlarge) -out ~/path/output  -scan-timeout 500 -screenshot-timeout 50000 -http-timeout 6000
 
     - [Gowitness](https://github.com/sensepost/gowitness)
 - [ ]  Buscar directorios
     - [Dirsearch](https://github.com/maurosoria/dirsearch)
 
-    python3 [dirsearch.py](http://dirsearch.py/) -u [target.com](http://target.com/) -E -w ./directory-list-lowercase-2.3-medium.txt -f -t 20 --plain-text-report=/tmp/salida.txt
+    Ejemplo:
+    python3 [dirsearch.py](http://dirsearch.py/) -u target.com -E -w ./directory-list-lowercase-2.3-medium.txt -f -t 20 --plain-text-report=/tmp/salida.txt
 
     - [Gobuster](https://tools.kali.org/web-applications/gobuster)
     - [ffuf](https://github.com/ffuf/ffuf)
@@ -111,13 +120,38 @@
 - [ ]  Buscar Aplicaciones en el Webserver (Virtual hosts/Subdomain), puertos no comunes, DNS zone transfers
     - [Masscan](https://github.com/robertdavidgraham/masscan)
 
-        masscan -iL targets.txt -p0-65535 --max-rate 10000 -sS -Pn -n --randomize-hosts --send-eth -oX output.xml
+        Ejemplo:
+        ./masscan -iL targets.txt -p0-65535 --max-rate 10000 -sS -Pn --randomize-hosts -banners -oX output.xml
+
         -p0-65535 (todos los puertos)
         -max-rate 10000 (cantidad de paquetes por segundo a transmitir, por defecto 100 paquetes/segundo)
 
+        Escaneo de puertos Web mas comunes:
+        ./masscan -p443,8443,80,8080,8000 165.183.102.0/23,165.183.106.0/24,165.183.108.0/24 --rate 1000
+
+    - Massdns
+
+        Resuelve los registros AAAA de una lista de dominios (domains.txt) y los guarda en results.txt:
+
+        ./bin/massdns -r lists/resolvers.txt -t AAAA -w results.txt domains.txt
+        (AAAA es el record para ipv6 mientras que el A es para ipv4)
+
+        [Lista de resolvers actualizada:](https://github.com/bberastegui/fresh-dns-servers)
+        ./bin/massdns -r <(curl -s https://raw.githubusercontent.com/BBerastegui/fresh-dns-servers/master/resolvers.txt)
+
+        ./bin/massdns -r lists/resolvers.txt -t AAAA -w results.txt domains.txt
+
+        (AAAA es el record para ipv6 mientras que el A es para ipv4)
+
+        ./scripts/ptr.py | ./bin/massdns -r lists/resolvers.txt -t PTR -w ptr.txt
+
     - [Nmap](https://nmap.org)
 
-        nmap target -sC -sV -vvv -p-65535
+        nmap target -sS -A -PN -sC -sV -vvv -p-65535
+
+        -sS syn scan
+        -A OS + service fingerprint
+        -PN No Ping
         -sC Scripts
         -sV Detección de versiones
         -vvv Verbosity
@@ -125,9 +159,16 @@
 
     - [HTTProbe](https://github.com/tomnomnom/httprobe)
 
-        cat archivo.txt | ./httprobe -p http:81 -p https:8443 -p http:8000 -p http:8001 -p http:8080 -p http:8181
+        Ejemplo:
+        cat archivo.txt | ./httprobe -p http:81 -p https:8443 -p http:8000 -p http:8001 -p http:8080 -p http:8181 -t 40000 
+
+        -t  Timeout en milisegundos (40000 es el doble del default)
 
     - [Nikto](https://github.com/sullo/nikto)
+
+        Ejemplo:
+        nikto -host <IP> -output <salida> -port 
+
     - [Virtual Host Discovery](https://github.com/jobertabma/virtual-host-discovery)
 - [ ]  Identificar "entry points" en la aplicación (Identificarlos desde campos ocultos, parámetros, metodos HTTP, análisis de headers)
 - [ ]  Fingerprints (Framework, tecnología, etc.)
@@ -136,30 +177,48 @@
 - [ ]  Robots.txt y revisar el código fuente HTML
 - [ ]  Web Crawler
     - Crawl burp (ex spider)
+    - [Hakrawler](https://github.com/hakluke/hakrawler)
+
+    Ejemplo:
+    ./assetfinder target.com | hakrawler
+
+    ./hakrawler -url target.com -depth 1
+
     - [http://arthusu.xyz/crawler/index.php?menu=crawler](http://arthusu.xyz/crawler/index.php?menu=crawler)
 - [ ]  Waybackmachine
     - [Waybackurls](https://github.com/tomnomnom/waybackurls)
     - [WaybackurlSqliScanner](https://github.com/ghostlulzhacks/waybackSqliScanner)
     - [http://arthusu.xyz/crawler/index.php?menu=urls](http://arthusu.xyz/crawler/index.php?menu=urls)
+- [ ]  GetAllUrls ([GAU](https://github.com/lc/gau))
+
+    Ejemplo:
+    gau example.com
+
 - [ ]  Análisis de archivos js
     - [Relative-url-extractor](https://github.com/jobertabma/relative-url-extractor) (extrae los js de una url para su posterior análisis)
-    - [JSParser](https://github.com/nahamsec/JSParser) (busca URL's en los js)
-    - [LinkFinder](https://github.com/GerbenJavado/LinkFinder) (BuscaURL's en los js)
+    - [JSParser](https://github.com/nahamsec/JSParser) (busca endpoints en los js)
+    - [LinkFinder](https://github.com/GerbenJavado/LinkFinder) (BuscaURL's y Parámetros en los js)
     - [http://arthusu.xyz/crawler/index.php?menu=JsScanner](http://arthusu.xyz/crawler/index.php?menu=JsScanner)
 - [ ]  Fuzzear parámetros
     - f[fuf](https://github.com/ffuf/ffuf)
     - [Wfuzz](https://wfuzz.readthedocs.io/en/latest/)
     - [Arjun](https://github.com/s0md3v/Arjun)
 
+        Ejemplo:
         python3 arjun.py -u https://api.example.com/endpoint --get -o result.json
+
         python3 arjun.py --urls targets.txt --get -o result.json
 
-- [ ]  Tools que hacen "Todo"
+- [ ]  Tools que hacen "TODO"
 - [Photon](https://github.com/s0md3v/Photon)
-python3 [photon.py](http://photon.py/) -u https://www.target.com -l 3 -t 100 --wayback -o /output/dir/ -v --keys --dns
+
+    Ejemplo:
+    python3 [photon.py](http://photon.py/) -u https://www.target.com -l 3 -t 100 --wayback -o /output/dir/ -v --keys --dns
+
 - [Lazyrecon](https://github.com/nahamsec/lazyrecon)
 
-    ~/tools/lazyrecon# ./lazyrecon.sh -d [target.com](http://target.com)
+    Ejemplo:
+    ./lazyrecon.sh -d [target.com](http://target.com)
 
 ## **Análisis Dinámico de la Aplicación:**
 
@@ -242,6 +301,14 @@ python3 [photon.py](http://photon.py/) -u https://www.target.com -l 3 -t 100 --w
         Chequea varias vulns, crackeo por diccionario
         Ejemplo: python3 jwt_tool.py <JWT>
 
+    - [JWT2Jhon](https://raw.githubusercontent.com/Sjord/jwtcrack/master/jwt2john.py)
+
+    Para convertir los JWT a formato crackeable por John
+    python3 [jwt2john.py](http://jwt2john.py) <JWT>
+
+    Ejecutar John:
+    ./john /tmp/token.txt —wordlist=wordlist.txt
+
 ### **Generales:**
 
 - [ ]  Testear Métodos HTTP
@@ -264,3 +331,9 @@ python3 [photon.py](http://photon.py/) -u https://www.target.com -l 3 -t 100 --w
 
     - [Metadata Cloud](https://gist.github.com/jhaddix/78cece26c91c6263653f31ba453e273b)
     - [Como usar las claves de los servicios](https://github.com/streaak/keyhacks#AWS-Access-Key-ID-and-Secret)
+
+### XSS
+
+[XSS Payloads](https://github.com/nettitude/xss_payloads)
+
+- [ ]  [XSpear](https://github.com/hahwul/XSpear)
