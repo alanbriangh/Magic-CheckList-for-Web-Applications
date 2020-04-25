@@ -3,11 +3,11 @@
 **Information Gathering:**
 
 - [ ] OSINT
-    - [ ] [Google](https://www.google.com/?client=safari)
+    - [ ] [Google](https://www.google.com)
 
         Use dorks, site, inurl, intext, intitle, etc.
 
-    - [ ]  [Bing](https://www.bing.com/?setlang=es)
+    - [ ]  [Bing](https://www.bing.com)
     - [ ]  [Duckduckgo](https://duckduckgo.com)
 
         site:target.com inurl:'&'
