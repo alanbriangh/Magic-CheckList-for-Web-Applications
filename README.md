@@ -8,4 +8,4 @@ Se puede importar y usar con https://www.notion.so (recomendado!)
 
 Now also with English version!
 
-See [this link](https://www.notion.so/robinlunde/Magic-CheckList-for-Web-Applications-02f8792cc6cd4f898294d19f4f12a2e8) to get the template directly in Notion!
+See [this link](https://www.notion.so/soyelmago/Magic-CheckList-for-Web-Applications-ae8f98cd762e4fc0b6f3448fad001113) to get the template directly in Notion!
