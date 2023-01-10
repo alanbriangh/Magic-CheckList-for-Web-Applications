@@ -177,7 +177,7 @@
     - [whatweb](https://github.com/urbanadventurer/WhatWeb)
     
         Ejemplo:
-        whatweb <Dominio>
+        whatweb https://dominio_victima/
     
 - [ ]  Mapear la arquitectura de la Aplicación (Identify application architecture including Web language, WAF, Reverse proxy, Application Server, Backend Database)
 - [ ]  Robots.txt y revisar el código fuente HTML
