@@ -173,6 +173,12 @@
 - [ ]  Identificar "entry points" en la aplicación (Identificarlos desde campos ocultos, parámetros, metodos HTTP, análisis de headers)
 - [ ]  Fingerprints (Framework, tecnología, etc.)
     - [Wappalyzer](https://www.wappalyzer.com) (extensión navegador)
+    
+    - [whatweb](https://github.com/urbanadventurer/WhatWeb)
+    
+        Ejemplo:
+        whatweb https://dominio_victima/
+    
 - [ ]  Mapear la arquitectura de la Aplicación (Identify application architecture including Web language, WAF, Reverse proxy, Application Server, Backend Database)
 - [ ]  Robots.txt y revisar el código fuente HTML
 - [ ]  Web Crawler
